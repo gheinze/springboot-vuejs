@@ -118,3 +118,64 @@ SELECT q.instrument_id, q.symbol, q.descr, d.issue_dte, d.maturity_dte, d.percen
     AND q.instrument_status = 'A'
   ORDER BY q.symbol
 ;
+
+
+/*
+CREATE OR REPLACE FUNCTION sm_load_eod_quotes(p_exchange TEXT, p_dte TEXT)
+RETURNS VOID AS $$
+DECLARE
+
+  v_exchange_id  sm_exchange.id%TYPE;
+  v_dte  date;
+  
+BEGIN
+
+    SELECT id INTO v_exchange_id FROM sm_exchange WHERE symbol = p_exchange;
+    SELECT to_date(substring(p_dte, 1, 10), 'YYYY-MM-DD') INTO v_dte;
+
+    -- Define newly encountered securities        
+    INSERT INTO sm_instrument(exchange_id, symbol, descr, create_dte, instrument_status, instrument_type)
+      SELECT v_exchange_id, symbol, security_descr, v_dte, 'A'
+            ,CASE 
+               WHEN symbol LIKE '%.DB%' THEN 'D'
+               WHEN symbol LIKE '%.PR%' THEN 'P'
+             END
+        FROM sm_eod_quotes_staging
+        WHERE (v_exchange_id, symbol) NOT IN (SELECT exchange_id, symbol FROM sm_instrument)
+        ORDER BY symbol
+    ;
+
+    -- Copy end of day quotes
+    INSERT INTO sm_eod_quote(instrument_id, read_dte, close_price, volume_traded)
+      SELECT s.id, v_dte, to_number(e.close_price,'999G999D99'), to_number(e.volume_traded, '999G999G999')
+        FROM sm_eod_quotes_staging e
+        JOIN sm_instrument s ON (s.exchange_id = v_exchange_id AND s.symbol = e.symbol)
+        ORDER BY e.symbol
+    ;
+    
+    -- Mark missing securities as inactive
+    UPDATE sm_instrument
+      SET instrument_status = 'I'
+      WHERE exchange_id = v_exchange_id
+        AND symbol IN (
+              SELECT symbol FROM sm_instrument WHERE exchange_id = v_exchange_id
+              EXCEPT
+              SELECT symbol FROM sm_eod_quotes_staging
+            )
+    ;    
+
+END;
+
+*/
+
+/*
+with x as (
+  select *  FROM csvread('/home/glenn/code/securities-scraping/data/eod_listings/TSX/2020-04-09_20-33/TSX~2020-04-09_20-33.quotes.csv', 'symbol~security~close~volume', 'charset=UTF-8 fieldSeparator=~')
+)
+SELECT 1 AS exchange_id
+             ,i.id as instrument_id
+             ,x.* 
+  FROM x
+  LEFT JOIN sm_instrument i ON (i.symbol = x."symbol")
+;
+*/

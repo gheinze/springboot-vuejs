@@ -11,7 +11,13 @@ const apiClient = axios.create({
 
 
 export default {
-    getQuote(symbol) {
-        return apiClient.get('/quotes/' + symbol);
+
+    getQuote(instrumentId) {
+        return apiClient.get('/quotes/' + instrumentId);
+    },
+
+    getExchanges() {
+        return apiClient.get('/exchanges');
     }
+
 }

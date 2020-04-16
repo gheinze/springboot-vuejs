@@ -29,7 +29,10 @@ export default {
 
     created() {
 
-        FinSecService.getQuote(this.symbol)
+        // TODO: later, this was just example
+        // FinSecService.getQuote(this.symbol)
+        // right now, a fake id
+        FinSecService.getQuote("1")
         .then(response => {
             this.quotes = response.data
         })

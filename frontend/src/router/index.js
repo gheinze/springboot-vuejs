@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Quote from "../views/Quote.vue";
+import Exchange from "../views/Exchange.vue";
 
 
 Vue.use(VueRouter);
@@ -16,6 +17,11 @@ const routes = [
     path: "/quote",
     name: "Quote",
     component: Quote
+  },
+  {
+    path: "/exchange",
+    name: "Exchange",
+    component: Exchange
   },
   {
     path: "/about",

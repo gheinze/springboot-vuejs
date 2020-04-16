@@ -1,27 +1,38 @@
 package space.redoak.am.finsec;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/api/finsec")
 public class FinSecController {
 
+    @Autowired private FinSecService finSecService;
+    @Autowired private QuoteDtoMapper quoteDtoMapper;
 
-    @GetMapping(value = "/quotes/{symbol}")
-    public List<Float> getQuotes(@PathVariable String symbol) {
 
-        List<Float> list = new ArrayList<>();
-        list.add(1.25f);
-        list.add(1.30f);
-        list.add(1.28f);
+    @GetMapping(value = "/exchanges")
+    public List<Exchange> getExchanges() {
+        return finSecService.getExchanges();
+    }
 
-        return list;
+
+    @GetMapping(value = "/quotes/{instrumentId}")
+    public List<QuoteDto> getQuotes(@PathVariable Integer instrumentId) {
+
+        List<Quote> quotes = finSecService.getQuotes(1);
+
+        return quotes.stream()
+            .map(q -> quoteDtoMapper.map(q))
+            .collect(Collectors.toList())
+            ;
 
     }
      
