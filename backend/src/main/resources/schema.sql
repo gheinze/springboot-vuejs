@@ -14,10 +14,10 @@ DROP TABLE sm_exchange;
 DROP TABLE sm_eod_quotes_staging;
 DROP FUNCTION sm_load_eod_quotes;
 
-CREATE UNLOGGED TABLE sm_eod_quotes_staging (
+CREATE TABLE sm_eod_quote_staging (
     symbol              VARCHAR,
     security_descr      VARCHAR,
-    close_price         DECIMAL,
+    close_price         VARCHAR,
     volume_traded       VARCHAR
 )
 ;

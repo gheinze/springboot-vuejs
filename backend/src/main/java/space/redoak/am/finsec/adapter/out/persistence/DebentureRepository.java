@@ -1,4 +1,4 @@
-package space.redoak.am.finsec;
+package space.redoak.am.finsec.adapter.out.persistence;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
